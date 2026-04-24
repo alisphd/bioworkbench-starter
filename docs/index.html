@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BioWorkbench Starter</title>
+    <meta
+      name="description"
+      content="BioWorkbench Starter is a modular bioinformatics workbench with a desktop app, a browser demo, and room to grow into a larger genomics toolkit."
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Offline-first bioinformatics toolkit</p>
+          <h1>BioWorkbench Starter</h1>
+          <p class="lede">
+            A modular genomics workbench with a desktop dashboard for local workflows and a web demo
+            for quick testing. Built to grow from practical sequence utilities into a broader
+            research platform.
+          </p>
+          <div class="actions">
+            <a class="button button-primary" href="../README.md">Read the README</a>
+            <a class="button button-secondary" href="./publish-and-deploy.md">Deployment Guide</a>
+          </div>
+        </div>
+        <div class="hero-panel">
+          <div class="metric">
+            <span class="metric-label">Ready tools</span>
+            <strong>5</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Desktop app</span>
+            <strong>PySide6</strong>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Live demo</span>
+            <strong>Streamlit</strong>
+          </div>
+          <p class="panel-note">
+            GitHub Pages hosts this project landing page. The interactive Python demo should be
+            deployed separately and linked here after launch.
+          </p>
+        </div>
+      </header>
+
+      <main class="content-grid">
+        <section class="card">
+          <p class="card-label">Use now</p>
+          <h2>Interactive tools already built</h2>
+          <ul class="tool-list">
+            <li>FASTA Formatter</li>
+            <li>Sequence Summary</li>
+            <li>Sequence Transform</li>
+            <li>Motif Finder</li>
+            <li>Primer Designer</li>
+          </ul>
+        </section>
+
+        <section class="card">
+          <p class="card-label">Build next</p>
+          <h2>Planned integrations</h2>
+          <ul class="tool-list">
+            <li>BLAST Explorer</li>
+            <li>HMM Build and HMM Search</li>
+            <li>Alignment Studio</li>
+            <li>Phylogenetic Analysis</li>
+            <li>Gene Density and Expression Visualization</li>
+          </ul>
+        </section>
+
+        <section class="card card-wide">
+          <p class="card-label">Deployment model</p>
+          <h2>Two-layer publishing strategy</h2>
+          <div class="steps">
+            <article>
+              <span>1</span>
+              <h3>GitHub repository</h3>
+              <p>Store the code, docs, tests, and deployment config in one public repository.</p>
+            </article>
+            <article>
+              <span>2</span>
+              <h3>GitHub Pages</h3>
+              <p>Host this static landing page from the repository so the project has a clean public home.</p>
+            </article>
+            <article>
+              <span>3</span>
+              <h3>Streamlit demo</h3>
+              <p>Publish the interactive Python demo from <code>streamlit_app.py</code> so anyone can try the ready tools.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="card card-wide">
+          <p class="card-label">Launch checklist</p>
+          <h2>What to do after the first push</h2>
+          <ol class="checklist">
+            <li>Enable GitHub Pages and choose the <code>docs/</code> folder as the publishing source.</li>
+            <li>Deploy <code>streamlit_app.py</code> on a Python-friendly host such as Streamlit Community Cloud.</li>
+            <li>Replace the placeholder messaging on this page with your final repository and demo links.</li>
+          </ol>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>
