@@ -5,6 +5,9 @@
 - a desktop application for richer local workflows
 - a browser-based demo so people can test core tools online
 
+Live demo: [bioworkbench-starter.streamlit.app](https://bioworkbench-starter.streamlit.app/)
+Project page: [alisphd.github.io/bioworkbench-starter](https://alisphd.github.io/bioworkbench-starter/)
+
 The project intentionally gives you:
 
 - a modular `PySide6` desktop shell
@@ -110,4 +113,3 @@ streamlit run streamlit_app.py
 5. Push the repo to GitHub and follow [docs/publish-and-deploy.md](docs/publish-and-deploy.md).
 
 More implementation guidance is in [docs/project-blueprint.md](docs/project-blueprint.md).
-

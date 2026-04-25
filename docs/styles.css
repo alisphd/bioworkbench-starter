@@ -88,6 +88,10 @@ h1 {
   margin-top: 28px;
 }
 
+.actions-secondary {
+  margin-top: 12px;
+}
+
 .button {
   display: inline-flex;
   align-items: center;
