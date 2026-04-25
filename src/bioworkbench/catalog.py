@@ -40,6 +40,17 @@ def build_registry() -> ToolRegistry:
             ),
         ),
         ToolSpec(
+            id="kmer_counter",
+            name="K-mer Counter",
+            category="Utilities",
+            description="Count the most frequent k-mers across FASTA records for quick composition screening.",
+            status="ready",
+            next_steps=(
+                "Add CSV export and per-record grouping.",
+                "Add visual distribution charts for large datasets.",
+            ),
+        ),
+        ToolSpec(
             id="blast_explorer",
             name="BLAST Explorer",
             category="Mining Suite",
@@ -59,6 +70,17 @@ def build_registry() -> ToolRegistry:
             next_steps=(
                 "Add degenerate motif support and regex mode.",
                 "Export match tables to CSV or Excel.",
+            ),
+        ),
+        ToolSpec(
+            id="orf_finder",
+            name="ORF Finder",
+            category="Mining Suite",
+            description="Find open reading frames in nucleotide FASTA records across forward and reverse frames.",
+            status="ready",
+            next_steps=(
+                "Add ORF FASTA export and genomic coordinate mapping.",
+                "Support custom start and stop codon tables.",
             ),
         ),
         ToolSpec(
@@ -135,6 +157,17 @@ def build_registry() -> ToolRegistry:
             next_steps=(
                 "Accept GFF3, FASTA index, and optional gene family filters.",
                 "Render ideogram-style summaries with export support.",
+            ),
+        ),
+        ToolSpec(
+            id="gc_window_scanner",
+            name="GC Window Scanner",
+            category="Visualization",
+            description="Scan GC content across sliding windows to reveal local compositional shifts.",
+            status="ready",
+            next_steps=(
+                "Add line charts and threshold highlighting.",
+                "Support downloadable window tables.",
             ),
         ),
         ToolSpec(

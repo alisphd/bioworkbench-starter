@@ -14,6 +14,9 @@ def test_registry_returns_ready_tools() -> None:
         "FASTA Formatter",
         "Sequence Summary",
         "Sequence Transform",
+        "K-mer Counter",
         "Motif Finder",
+        "ORF Finder",
+        "GC Window Scanner",
         "Primer Designer",
     ]

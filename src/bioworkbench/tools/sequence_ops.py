@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from collections import Counter
 
 
 DNA_ALPHABET = set("ACGTN")
@@ -126,6 +127,32 @@ class PrimerDesignResult:
     forward: tuple[PrimerCandidate, ...]
     reverse: tuple[PrimerCandidate, ...]
     scanned_records: int
+
+
+@dataclass(frozen=True)
+class OrfHit:
+    header: str
+    frame: int
+    start: int
+    end: int
+    length: int
+    nucleotide_sequence: str
+    protein_sequence: str
+
+
+@dataclass(frozen=True)
+class GcWindow:
+    header: str
+    start: int
+    end: int
+    gc_percent: float | None
+
+
+@dataclass(frozen=True)
+class KmerCount:
+    kmer: str
+    count: int
+    frequency_percent: float
 
 
 def parse_fasta(text: str, uppercase: bool = True) -> list[SequenceRecord]:
@@ -365,6 +392,151 @@ def design_primers(
     return PrimerDesignResult(forward=forward_sorted, reverse=reverse_sorted, scanned_records=scanned_records)
 
 
+def find_orfs(
+    records: list[SequenceRecord],
+    min_length: int = 90,
+    include_reverse: bool = True,
+) -> list[OrfHit]:
+    if min_length < 3:
+        raise ValueError("Minimum ORF length must be at least 3.")
+
+    hits: list[OrfHit] = []
+    stop_codons = {"TAA", "TAG", "TGA"}
+
+    for record in records:
+        if infer_sequence_type(record.sequence) not in {"DNA", "RNA", "Nucleotide"}:
+            continue
+
+        forward_sequence = _normalize_nucleotide(record.sequence)
+        search_targets = [(1, forward_sequence)]
+        if include_reverse:
+            search_targets.append((-1, reverse_complement(forward_sequence)))
+
+        for direction, sequence in search_targets:
+            for frame_offset in range(3):
+                index = frame_offset
+                while index <= len(sequence) - 3:
+                    codon = sequence[index : index + 3]
+                    if codon != "ATG":
+                        index += 3
+                        continue
+
+                    stop_index = index + 3
+                    while stop_index <= len(sequence) - 3:
+                        stop_codon = sequence[stop_index : stop_index + 3]
+                        if stop_codon in stop_codons:
+                            end = stop_index + 3
+                            nucleotide_sequence = sequence[index:end]
+                            if len(nucleotide_sequence) >= min_length:
+                                start_position, end_position = _project_orf_coordinates(
+                                    index,
+                                    end,
+                                    len(sequence),
+                                    direction,
+                                )
+                                hits.append(
+                                    OrfHit(
+                                        header=record.header,
+                                        frame=frame_offset + 1 if direction == 1 else -(frame_offset + 1),
+                                        start=start_position,
+                                        end=end_position,
+                                        length=len(nucleotide_sequence),
+                                        nucleotide_sequence=nucleotide_sequence,
+                                        protein_sequence=translate_sequence(nucleotide_sequence),
+                                    )
+                                )
+                            index = stop_index + 3
+                            break
+                        stop_index += 3
+                    else:
+                        index += 3
+
+    return sorted(hits, key=lambda hit: (hit.header, hit.start, -hit.length))
+
+
+def gc_windows(
+    records: list[SequenceRecord],
+    window_size: int = 100,
+    step_size: int = 50,
+) -> list[GcWindow]:
+    if window_size < 1:
+        raise ValueError("Window size must be at least 1.")
+    if step_size < 1:
+        raise ValueError("Step size must be at least 1.")
+
+    windows: list[GcWindow] = []
+    for record in records:
+        if infer_sequence_type(record.sequence) not in {"DNA", "RNA", "Nucleotide"}:
+            continue
+
+        sequence = _normalize_nucleotide(record.sequence)
+        if not sequence:
+            continue
+
+        if len(sequence) <= window_size:
+            windows.append(GcWindow(record.header, 1, len(sequence), gc_content(sequence)))
+            continue
+
+        for start_index in range(0, len(sequence) - window_size + 1, step_size):
+            window = sequence[start_index : start_index + window_size]
+            windows.append(
+                GcWindow(
+                    header=record.header,
+                    start=start_index + 1,
+                    end=start_index + window_size,
+                    gc_percent=gc_content(window),
+                )
+            )
+    return windows
+
+
+def count_kmers(
+    records: list[SequenceRecord],
+    k: int = 3,
+    top_n: int = 20,
+    nucleotide_only: bool = True,
+) -> list[KmerCount]:
+    if k < 1:
+        raise ValueError("K-mer size must be at least 1.")
+    if top_n < 1:
+        raise ValueError("Top N must be at least 1.")
+
+    counter: Counter[str] = Counter()
+    total = 0
+    allowed = {"A", "C", "G", "T", "U", "N"}
+
+    for record in records:
+        sequence = record.sequence.upper()
+        if nucleotide_only:
+            sequence = sequence.replace("U", "T")
+        for index in range(0, len(sequence) - k + 1):
+            kmer = sequence[index : index + k]
+            if nucleotide_only and set(kmer) - allowed:
+                continue
+            if not kmer.isalpha():
+                continue
+            counter[kmer] += 1
+            total += 1
+
+    if total == 0:
+        return []
+
+    return [
+        KmerCount(kmer=kmer, count=count, frequency_percent=(count / total) * 100)
+        for kmer, count in counter.most_common(top_n)
+    ]
+
+
+def _normalize_nucleotide(sequence: str) -> str:
+    return "".join(char for char in sequence.upper().replace("U", "T") if char.isalpha())
+
+
+def _project_orf_coordinates(start: int, end: int, sequence_length: int, direction: int) -> tuple[int, int]:
+    if direction == 1:
+        return start + 1, end
+    return sequence_length - end + 1, sequence_length - start
+
+
 def _has_homopolymer_run(sequence: str, max_run: int) -> bool:
     current = 1
     for index in range(1, len(sequence)):
@@ -385,4 +557,3 @@ def _wallace_tm(sequence: str) -> float:
 
 def _primer_sort_key(candidate: PrimerCandidate) -> tuple[float, str, int]:
     return (candidate.score, candidate.header, candidate.start)
-

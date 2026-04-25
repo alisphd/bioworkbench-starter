@@ -1,6 +1,9 @@
 from bioworkbench.tools.sequence_ops import (
+    count_kmers,
     design_primers,
     find_motif_matches,
+    find_orfs,
+    gc_windows,
     parse_fasta,
     summarize_records,
     transform_records,
@@ -39,3 +42,28 @@ def test_design_primers_returns_ranked_candidates() -> None:
     assert result.scanned_records == 1
     assert len(result.forward) == 3
     assert len(result.reverse) == 3
+
+
+def test_find_orfs_reports_forward_open_reading_frames() -> None:
+    records = parse_fasta(">seq1\nAAATGAAACCCGGGTAA")
+    hits = find_orfs(records, min_length=12, include_reverse=False)
+
+    assert len(hits) == 1
+    assert hits[0].start == 3
+    assert hits[0].end == 17
+    assert hits[0].protein_sequence == "MKPG*"
+
+
+def test_gc_windows_scans_with_step_size() -> None:
+    records = parse_fasta(">seq1\nAAAACCCCGGGGTTTT")
+    windows = gc_windows(records, window_size=8, step_size=4)
+
+    assert [(window.start, window.end) for window in windows] == [(1, 8), (5, 12), (9, 16)]
+    assert [round(window.gc_percent or 0, 2) for window in windows] == [50.0, 100.0, 50.0]
+
+
+def test_count_kmers_returns_top_counts() -> None:
+    records = parse_fasta(">seq1\nATATAT")
+    counts = count_kmers(records, k=2, top_n=2)
+
+    assert [(item.kmer, item.count) for item in counts] == [("AT", 3), ("TA", 2)]
