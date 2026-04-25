@@ -591,8 +591,31 @@ def _inject_theme() -> None:
             background: #111827;
             border-right: 1px solid rgba(255,255,255,0.08);
         }
-        section[data-testid="stSidebar"] * {
-            color: #f8fafc;
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] label,
+        section[data-testid="stSidebar"] span {
+            color: #e5edf5;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] label {
+            color: #e5edf5 !important;
+        }
+        section[data-testid="stSidebar"] [data-testid="stRadio"] label:hover {
+            color: #ffffff !important;
+        }
+        section[data-testid="stSidebar"] .stLinkButton > a {
+            background: #0f766e !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(45,212,191,0.36) !important;
+            box-shadow: 0 8px 18px rgba(15,118,110,0.24);
+        }
+        section[data-testid="stSidebar"] .stLinkButton > a:hover {
+            background: #115e59 !important;
+            color: #ffffff !important;
+            border-color: rgba(94,234,212,0.7) !important;
+        }
+        section[data-testid="stSidebar"] .stLinkButton > a *,
+        section[data-testid="stSidebar"] .stLinkButton > a:hover * {
+            color: #ffffff !important;
         }
         .sidebar-brand {
             display: flex;
@@ -985,6 +1008,46 @@ def _inject_theme() -> None:
             border-radius: 7px;
             font-weight: 760;
             border: 1px solid rgba(15,118,110,0.22);
+            transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+        }
+        .stButton > button {
+            background: #ffffff !important;
+            color: #111827 !important;
+            border-color: #cbd5e1 !important;
+        }
+        .stButton > button:hover {
+            background: #eef8f6 !important;
+            color: #0f766e !important;
+            border-color: #0f766e !important;
+        }
+        .stButton > button[kind="primary"],
+        .stButton > button[data-testid="baseButton-primary"] {
+            background: #0f766e !important;
+            color: #ffffff !important;
+            border-color: #0f766e !important;
+        }
+        .stButton > button[kind="primary"]:hover,
+        .stButton > button[data-testid="baseButton-primary"]:hover {
+            background: #115e59 !important;
+            color: #ffffff !important;
+            border-color: #115e59 !important;
+        }
+        .stButton > button *,
+        .stDownloadButton > button *,
+        .stLinkButton > a * {
+            color: inherit !important;
+        }
+        .stDownloadButton > button,
+        .stLinkButton > a {
+            background: #eef8f6 !important;
+            color: #0f766e !important;
+            border-color: rgba(15,118,110,0.32) !important;
+        }
+        .stDownloadButton > button:hover,
+        .stLinkButton > a:hover {
+            background: #d9f0eb !important;
+            color: #115e59 !important;
+            border-color: #115e59 !important;
         }
         .stTextArea textarea {
             border-radius: 8px;
